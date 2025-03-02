@@ -33,12 +33,8 @@ export default async function Page() {
         <p className="text-lg opacity-50">List of all tags</p>
       </div>
       <div className="my-10 max-w-6xl text-balance text-center text-xl mb-48">
-        {result.tags.map((tag) => (
-          <Link
-            key={tag.id}
-            href={`/tag/${tag.name}`}
-            className="text-primary mr-2 inline-block"
-          >
+        {result.tags.map((tag: { id: string; name: string }) => (
+          <Link key={tag.id} href={`/tag/${tag.name}`}>
             #{tag.name}
           </Link>
         ))}
