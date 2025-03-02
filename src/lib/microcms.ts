@@ -94,30 +94,20 @@ export async function getComments({
 
 export async function getTags() {
   try {
-    console.log("Fetching tags from microCMS...");
-    const res = await fetch(
-      `https://${process.env.NEXT_PUBLIC_MICROCMS_SERVICE_DOMAIN}/api/v1/tags`,
-      {
-        headers: {
-          "X-MICROCMS-API-KEY": process.env.NEXT_PUBLIC_MICROCMS_API_KEY!,
-        },
-      }
-    );
+    const res = await fetch(`https://${process.env.NEXT_PUBLIC_MICROCMS_SERVICE_DOMAIN}/api/v1/tags`, {
+      headers: { "X-API-KEY": process.env.NEXT_PUBLIC_MICROCMS_API_KEY! },
+    });
 
     if (!res.ok) {
-      console.error("Failed to fetch tags:", res.status, res.statusText);
+      console.error(`Failed to fetch tags: ${res.status} ${res.statusText}`);
       return [];
     }
 
     const data = await res.json();
-    if (!data || !Array.isArray(data.contents)) {
-      console.error("Invalid response format from getTags()", data);
-      return [];
-    }
-
-    return data.contents;
+    return data.contents || []; // `contents` が `undefined` でも空配列を返す
   } catch (error) {
     console.error("Error fetching tags:", error);
     return [];
   }
 }
+
