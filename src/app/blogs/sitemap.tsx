@@ -7,11 +7,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     // microCMS から記事データを取得
     const postsData = await getPosts();
+
+    // 取得したデータをログに出力（デバッグ用）
     console.log("Fetched Posts in Sitemap:", postsData);
 
-    // データが取得できなかった場合のフォールバック処理
+    // レスポンスが不正な場合のフォールバック
     if (!postsData || typeof postsData !== "object" || !("contents" in postsData)) {
-      console.error("Invalid response from getPosts()");
+      console.error("Error: Invalid response from getPosts() or empty contents");
       return [
         {
           url: urlJoin(config.baseUrl, "blogs"),
@@ -41,6 +43,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ];
   } catch (error) {
     console.error("Error in sitemap generation:", error);
+
+    // 失敗した場合のフォールバックデータを返す
     return [
       {
         url: urlJoin(config.baseUrl, "blogs"),

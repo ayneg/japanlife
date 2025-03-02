@@ -31,7 +31,7 @@ export const RelatedPosts: FunctionComponent<{ posts: MicroCMSPost[] }> = ({
             <Link href={`/blogs/${post.slug || post.id}`}>
               <AspectRatio ratio={16 / 9} className="w-full">
                 <Image
-                  src={post.image || "/images/placeholder.png"}
+                  src={post.image || "/images/placeholder.webp"}
                   alt={post.title}
                   fill
                   className="h-full min-h-full min-w-full object-cover object-center"

@@ -20,7 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
 
     const posts = postsData.map((post: any) => ({
-      url: urlJoin(config.baseUrl, "blogs", encodeURIComponent(post.slug || post.id)),
+      url: urlJoin(config.baseUrl, "blogs", post.slug || post.id),
       lastModified: new Date(post.updatedAt || post.publishedAt || Date.now()),
       priority: 0.6,
     }));
