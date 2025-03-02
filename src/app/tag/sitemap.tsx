@@ -1,25 +1,50 @@
 import type { MetadataRoute } from "next";
 import urlJoin from "url-join";
 import { config } from "@/config";
-import { getTags } from "@/lib/microcms";
+import { getPosts } from "@/lib/microcms";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // microCMS からタグデータを取得
-  const tags = await getTags(); // getTags() がタグの配列を返す想定
+  try {
+    console.log("Fetching posts for sitemap...");
+    const postsData = await getPosts();
 
-  return [
-    {
-      // ルートを /tag にするなら以下を維持
-      // /tags にしたい場合は urlJoin(config.baseUrl, "tags") に変更
-      url: urlJoin(config.baseUrl, "tag"),
-      lastModified: new Date(),
-      priority: 0.8,
-    },
-    ...tags.map((tag: any) => ({
-      // 同様に /tag → /tags にしたい場合はここも修正
-      url: urlJoin(config.baseUrl, "tag", tag.name),
-      lastModified: new Date(),
-      priority: 0.8,
-    })),
-  ];
+    if (!postsData || !Array.isArray(postsData)) {
+      console.error(
+        "Error: Invalid response from getPosts() or empty contents"
+      );
+      return [
+        {
+          url: urlJoin(config.baseUrl, "blogs"),
+          lastModified: new Date(),
+          priority: 0.8,
+        },
+      ];
+    }
+
+    console.log(`Fetched ${postsData.length} posts for sitemap.`);
+
+    const posts = postsData.map((post: any) => ({
+      url: urlJoin(config.baseUrl, "blogs", post.slug || post.id),
+      lastModified: new Date(post.updatedAt || post.publishedAt || Date.now()),
+      priority: 0.6,
+    }));
+
+    return [
+      {
+        url: urlJoin(config.baseUrl, "blogs"),
+        lastModified: new Date(),
+        priority: 0.8,
+      },
+      ...posts,
+    ];
+  } catch (error) {
+    console.error("Error generating sitemap:", error);
+    return [
+      {
+        url: urlJoin(config.baseUrl, "blogs"),
+        lastModified: new Date(),
+        priority: 0.8,
+      },
+    ];
+  }
 }
